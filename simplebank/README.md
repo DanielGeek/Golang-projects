@@ -16,3 +16,34 @@ In this course, you'll gain practical experience with a variety of backend web d
 - Enabling and automating TLS certificate issuance and renewal with Let's Encrypt for secure communications.
 - Advancing your backend skills with gRPC for efficient API development and utilizing a gRPC gateway to serve both gRPC and HTTP requests concurrently.
 - Processing tasks asynchronously using Redis and Asynq, which can help run background workers for various asynchronous operations.
+
+## utils commands
+### https://github.com/golang-migrate/migrate/tree/master/cmd/migrate
+- `migrate create -ext sql -dir db/migration -seq init_schema`
+
+### Run postgres12 container
+- `docker start postgres12`
+  
+### Acces to shell container
+- `docker exec -it postgres12 /bin/sh` 
+
+### Create database from shell console
+- `createdb --username=root --owner=root simple_bank`
+
+### Acces to sql command line from shell console
+- `psql simple_bank`
+
+### exit psql shell
+- `\q`
+  
+### delete db from shell 
+- `dropdb simple_bank`
+
+### Create database from docker command line
+- `docker exec -it postgres12 createdb --username=root --owner=root simple_bank`
+
+### Acces from docker command line to the db
+- `docker exec -it postgres12 psql -U root simple_bank`
+
+### Migreate db from db/migration folder
+- `migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up`
