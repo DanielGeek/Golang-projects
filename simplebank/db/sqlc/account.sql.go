@@ -119,7 +119,16 @@ type UpdateAccountParams struct {
 	Balance int64 `json:"balance"`
 }
 
-func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) error {
-	_, err := q.db.ExecContext(ctx, updateAccount, arg.ID, arg.Balance)
-	return err
+func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
+    var account Account
+    err := q.db.QueryRowContext(ctx, `
+        UPDATE accounts
+        SET balance = $2
+        WHERE id = $1
+        RETURNING id, owner, balance, currency, created_at
+    `, arg.ID, arg.Balance).Scan(&account.ID, &account.Owner, &account.Balance, &account.Currency, &account.CreatedAt)
+    if err != nil {
+        return Account{}, err
+    }
+    return account, nil
 }
