@@ -47,3 +47,7 @@ In this course, you'll gain practical experience with a variety of backend web d
 
 ### Migreate db from db/migration folder
 - `migrate -path db/migration -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up`
+
+### Migrate db using Makefile commands
+- `make migratedown`
+- `make migrateup`

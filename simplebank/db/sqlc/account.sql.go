@@ -9,6 +9,23 @@ import (
 	"context"
 )
 
+const addAccountBalance = `-- name: AddAccountBalance :exec
+UPDATE accounts
+  set balance = balance + $2
+WHERE id = $1
+RETURNING id, owner, balance, currency, created_at
+`
+
+type AddAccountBalanceParams struct {
+	ID      int64 `json:"id"`
+	Balance int64 `json:"balance"`
+}
+
+func (q *Queries) AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) error {
+	_, err := q.db.ExecContext(ctx, addAccountBalance, arg.ID, arg.Balance)
+	return err
+}
+
 const createAccount = `-- name: CreateAccount :one
 INSERT INTO accounts (
   owner,
@@ -69,7 +86,7 @@ func (q *Queries) GetAccount(ctx context.Context, id int64) (Account, error) {
 const getAccountForUpdate = `-- name: GetAccountForUpdate :one
 SELECT id, owner, balance, currency, created_at FROM accounts
 WHERE id = $1 LIMIT 1
-FOR UPDATE
+FOR NO KEY UPDATE
 `
 
 func (q *Queries) GetAccountForUpdate(ctx context.Context, id int64) (Account, error) {
