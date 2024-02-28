@@ -1,4 +1,4 @@
 # Golang-projects
-Persona projects with Golang
+Personal projects with Golang
 
 #  go mod init pcbook
