@@ -2,3 +2,6 @@
 
 # Run
 `go run blockchain.go`
+
+# help full commands
+`go mod init go_blockchain`
