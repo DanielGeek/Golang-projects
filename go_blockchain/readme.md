@@ -5,3 +5,6 @@
 
 # help full commands
 `go mod init go_blockchain`
+
+## fomart code
+`gofmt -w block/blockchain.go`

@@ -7,16 +7,15 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
-	"math/big"
+	"go_blockchain/utils"
 
 	"github.com/btcsuite/btcutil/base58"
 	"golang.org/x/crypto/ripemd160"
 )
 
-
 type Wallet struct {
-	privateKey 				*ecdsa.PrivateKey
-	publicKey 				*ecdsa.PublicKey
+	privateKey        *ecdsa.PrivateKey
+	publicKey         *ecdsa.PublicKey
 	blockchainAddress string
 }
 
@@ -26,7 +25,7 @@ func NewWallet() *Wallet {
 	privateKey, _ := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	w.privateKey = privateKey
 	w.publicKey = &w.privateKey.PublicKey
-	// 2. Perfom SHA-256 hashing on the public key (32 bytes).
+	// 2. Perform SHA-256 hashing on the public key (32 bytes).
 	h2 := sha256.New()
 	h2.Write(w.publicKey.X.Bytes())
 	h2.Write(w.publicKey.Y.Bytes())
@@ -43,17 +42,17 @@ func NewWallet() *Wallet {
 	h5 := sha256.New()
 	h5.Write(vd4)
 	digest5 := h5.Sum(nil)
-	// 6. Perfom SHA-256 hash on the result of the previous SHA-256 hash.
+	// 6. Perform SHA-256 hash on the result of the previous SHA-256 hash.
 	h6 := sha256.New()
 	h6.Write(digest5)
 	digest6 := h6.Sum(nil)
 	// 7. Take the first 4 bytes of the second SHA-256 hash for checksum.
-	checksum := digest6[:4]
+	chsum := digest6[:4]
 	// 8. Add the 4 checksum bytes from 7 at the end of extended RIPEMD-160 hash from 4 (25 bytes).
 	dc8 := make([]byte, 25)
 	copy(dc8[:21], vd4[:])
-	copy(dc8[21:], checksum[:])
-	// 9. Convert the result from a byte string into base58/
+	copy(dc8[21:], chsum[:])
+	// 9. Convert the result from a byte string into base58.
 	address := base58.Encode(dc8)
 	w.blockchainAddress = address
 	return w
@@ -80,42 +79,33 @@ func (w *Wallet) BlockchainAddress() string {
 }
 
 type Transaction struct {
-	senderPrivateKey *ecdsa.PrivateKey
-	senderPublicKey *ecdsa.PublicKey
-	senderBlockchainAddress string
+	senderPrivateKey           *ecdsa.PrivateKey
+	senderPublicKey            *ecdsa.PublicKey
+	senderBlockchainAddress    string
 	recipientBlockchainAddress string
-	value float32
+	value                      float32
 }
 
 func NewTransaction(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey,
-		sender string, recipient string, value float32)	*Transaction {
-			return &Transaction{privateKey, publicKey, sender, recipient, value}
+	sender string, recipient string, value float32) *Transaction {
+	return &Transaction{privateKey, publicKey, sender, recipient, value}
 }
 
-func (t *Transaction) GenerateSignature() *Signature {
+func (t *Transaction) GenerateSignature() *utils.Signature {
 	m, _ := json.Marshal(t)
 	h := sha256.Sum256([]byte(m))
 	r, s, _ := ecdsa.Sign(rand.Reader, t.senderPrivateKey, h[:])
-	return &Signature{r, s}
+	return &utils.Signature{r, s}
 }
 
-func (t *Transaction) Marshal() ([]byte, error) {
+func (t *Transaction) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
-		Sender string `json:"sender_blockchain_address"`
-		Recipient string `json:"recipient_blockchain_address"`
-		Value float32 `json:"value"`
+		Sender    string  `json:"sender_blockchain_address"`
+		Recipient string  `json:"recipient_blockchain_address"`
+		Value     float32 `json:"value"`
 	}{
-		Sender: t.senderBlockchainAddress,
+		Sender:    t.senderBlockchainAddress,
 		Recipient: t.recipientBlockchainAddress,
-		Value: t.value,
+		Value:     t.value,
 	})
-}
-
-type Signature struct {
-	R *big.Int
-	S *big.Int
-}
-
-func (s *Signature) String() string {
-	return fmt.Sprintf("%x%x", s.R, s.S)
 }
