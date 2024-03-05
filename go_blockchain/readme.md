@@ -9,5 +9,7 @@
 ## fomart code
 `gofmt -w block/blockchain.go`
 
-### run server
+### run servers
+`cd to directory you want to run`
 `go run main.go blockchain_server.go -port 5001`
+`go run main.go wallet_server.go`
