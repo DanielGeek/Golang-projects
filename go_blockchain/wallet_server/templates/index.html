@@ -19,6 +19,37 @@
         error: function(error) {
           console.error(error);
         }
+      });
+
+      $('#send_money_button').click(function () {
+        let confirm_text = 'Are you sure to send?';
+        let confirm_result = confirm(confirm_text);
+        if (confirm_result !== true) {
+          alert('Canceled');
+          return
+        }
+
+        let transaction_data = {
+          'sender_private_key': $('#private_key').val(),
+          'sender_blockchain_address': $('#blockchain_address').val(),
+          'recipient_blockchain_address': $('#recipient_blockchain_address').val(),
+          'value': $('#sender_amount').val(),
+        };
+
+        $.ajax({
+          url: '/transaction',
+          type: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(transaction_data),
+          success: function (response) {
+            console.info(response);
+            alert('Send success');
+          },
+          error: function (response) {
+            console.error(response);
+            alert('Send failed');
+          }
+        })
       })
     })
   </script>
@@ -46,7 +77,7 @@
     <div>
       Address: <input id="recipient_blockchain_address" size="100" type="text" />
       <br>
-      Amount: <input id="send_amount" type="text" />
+      Amount: <input id="sender_amount" type="text" />
       <br>
       <button id="send_money_button">Send</button>
     </div>
