@@ -19,4 +19,5 @@
 - Blockchain transactions http://0.0.0.0:5000/transactions
 - Blockchain chain http://0.0.0.0:5000/chain
 - Blockchain mining http://0.0.0.0:5000/mine/start
-- Wallet total amount http://0.0.0.0:5000/amount?blockchain_address=1NVNQbFvy1dJBegPJzJKK3ZvLQfrcL5GyJ
+- Blockchain server total amount http://0.0.0.0:5000/amount?blockchain_address=1NVNQbFvy1dJBegPJzJKK3ZvLQfrcL5GyJ
+- Wallet server total amount http://0.0.0.0:8080/wallet/amount?blockchain_address=1LbMKTWLBLNu7QHrviDa2N2Nvv7ynubGM8
